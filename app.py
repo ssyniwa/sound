@@ -25,14 +25,14 @@ spot_settings = {
         "outimg": "assets/p1front.png"
     },
     "中級：○○病院跡": {
-        "threshold": 0.15, 
+        "threshold": 0.5, 
         "required_time": 10, 
         "enemy_img": "assets/p2back.png",
         "description": "何かの気配を感じる... 音を立てれば、即座に見つかるぞ。",
         "outimg": "assets/p2front.png"
     },
     "上級：呪われたＳ家": {
-        "threshold": 0.05, 
+        "threshold": 0.3, 
         "required_time": 15, 
         "enemy_img": "assets/enemy_back.png",
         "description": "最恐のスポット。息を殺せ。物音一つ立てるな。",
