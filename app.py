@@ -72,7 +72,7 @@ elif st.session_state.game_step == "streaming":
     st.markdown("---")
     st.subheader("📹 配信者への指示")
     st.error("「小声でレポートを続けてください...」")
-    st.write(f"（目標探索時間: {conf['required_time']}秒）")
+    st.write(f"（目標探索時間: {int(3*conf['required_time'])}秒）")
 
     # 移動距離ゲージ
     progress_bar = st.progress(0, text="探索進捗: 0%")
