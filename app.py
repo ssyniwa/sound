@@ -20,23 +20,23 @@ spot_settings = {
     "初級：旧・Ｋトンネル": {
         "threshold": 0.3, 
         "required_time": 5, 
-        "enemy_img": "assets/p1back.png?text=Empty_Tunnel",
+        "enemy_img": "assets/p1back.png",
         "description": "比較的安全なスポット。小声でレポートを続けろ。",
-        "outimg": "assets/p1front.png?text=Empty_Tunnel"
+        "outimg": "assets/p1front.png"
     },
     "中級：○○病院跡": {
         "threshold": 0.15, 
         "required_time": 10, 
-        "enemy_img": "assets/p2back.png?text=Hospital_Shadow",
+        "enemy_img": "assets/p2back.png",
         "description": "何かの気配を感じる... 音を立てれば、即座に見つかるぞ。",
-        "outimg": "assets/p2front.png?text=Hospital_Shadow"
+        "outimg": "assets/p2front.png"
     },
     "上級：呪われたＳ家": {
         "threshold": 0.05, 
         "required_time": 15, 
-        "enemy_img": "assets/enemy_back.png?text=Cursed_Doll",
+        "enemy_img": "assets/enemy_back.png",
         "description": "最恐のスポット。息を殺せ。物音一つ立てるな。",
-        "outimg": "assets/enemy_front.png?text=Cursed_Doll"
+        "outimg": "assets/enemy_front.png"
     }
 }
 
@@ -133,7 +133,7 @@ elif st.session_state.game_step == "result":
         
         else:
             # クリア演出
-            st.image("assets/enemy_clear.png?text=SAFE_RETURN", caption="生還")
+            st.image("assets/enemy_clear.png", caption="生還")
             st.success("配信者「ふぅ、なんとか無事に脱出できました...」")
             st.success("（配信は伝説となった）")
             st.balloons()
