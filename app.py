@@ -21,7 +21,12 @@ class StealthAudioProcessor(AudioProcessorBase):
             self.max_amplitude = np.max(np.abs(raw_data))
 
         return frame
+# 標準機能のマイクレコーダーを試す
+audio_value = st.audio_input("マイクのテスト（ここで波形が動くか確認してください）")
 
+if audio_value:
+    st.write("マイクは生きています！")
+    st.audio(audio_value)
 # --- アプリ設定 ---
 st.set_page_config(page_title="Silent Stealth", layout="centered")
 st.title("🤫 息を殺せ！ステルスサバイバル")
