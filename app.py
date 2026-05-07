@@ -26,7 +26,7 @@ if 'start_time' not in st.session_state:
 
 # --- UI要素 ---
 threshold = st.sidebar.slider("敵の感度 (しきい値)", 0.01, 1.00, 0.15)
-limit_time = 30 # 30秒耐える設定
+limit_time = 60 # 60秒耐える設定
 
 # 画像表示用
 enemy_image = st.empty()
@@ -78,7 +78,7 @@ if ctx.state.playing:
                 st.session_state.game_active = False
                 break
 
-            time.sleep(0.1) # ブラウザの負荷軽減
+            time.sleep(0.5) # ブラウザの負荷軽減
             st.rerun() # 画面を強制更新してリアルタイム性を出す
         else:
             time.sleep(0.5)
