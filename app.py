@@ -48,7 +48,7 @@ ctx = webrtc_streamer(
     key="stealth-game-v2",
     mode=WebRtcMode.SENDONLY,
     media_stream_constraints={"video": False, "audio": True},
-    worker_class=StealthAudioProcessor,
+    audio_processor_factory=StealthAudioProcessor,
 )
 
 # --- ゲームループ ---
