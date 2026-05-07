@@ -3,78 +3,87 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode, AudioProcessorBase
 import numpy as np
 import time
 
-# --- 設定 ---
-GAME_TIME = 60  # 制限時間（秒）
-
-st.set_page_config(page_title="Stealth Voice Game", layout="centered")
-st.title("👁️ 敵の視線を逃れろ")
-
-# セッション状態の初期化
-if 'start_time' not in st.session_state:
-    st.session_state.start_time = None
-if 'game_over' not in st.session_state:
-    st.session_state.game_over = False
-
-# 音声処理クラス
+# --- 音声処理クラス ---
 class StealthAudioProcessor(AudioProcessorBase):
     def __init__(self):
         self.max_amplitude = 0
 
     def recv_audio(self, frame):
         audio_data = frame.to_ndarray()
+        # 振幅の最大値を取得
         self.max_amplitude = np.max(np.abs(audio_data)) / 32768.0
         return frame
 
-# --- UIレイアウト ---
-col1, col2 = st.columns([2, 1])
+# --- アプリ設定 ---
+st.set_page_config(page_title="Silent Stealth", layout="centered")
+st.title("🤫 息を殺せ！ステルスサバイバル")
 
-with col2:
-    threshold = st.slider("敵の聴覚感度", 0.0, 1.0, 0.2)
-    start_btn = st.button("ゲーム開始！")
-    if start_btn:
-        st.session_state.start_time = time.time()
-        st.session_state.game_over = False
+# セッション状態（ゲーム管理）
+if 'game_active' not in st.session_state:
+    st.session_state.game_active = False
+if 'start_time' not in st.session_state:
+    st.session_state.start_time = 0
 
-with col1:
-    # 敵の画像表示用プレースホルダー
-    enemy_placeholder = st.empty()
-    timer_placeholder = st.empty()
-    
-    # 初期の敵（背中を向けている状態）
-    enemy_placeholder.image("assets/enemy_back.png", caption="敵は背を向けている...")
+# --- UI要素 ---
+threshold = st.sidebar.slider("敵の感度 (しきい値)", 0.01, 0.50, 0.15)
+limit_time = 30 # 30秒耐える設定
 
-# WebRTC接続
+# 画像表示用
+enemy_image = st.empty()
+status_text = st.empty()
+progress_bar = st.progress(0)
+
+# 初期画像（背中）
+enemy_image.image("assets/enemy_back.png", caption="敵は油断している...")
+
+# WebRTCストリーマー
 ctx = webrtc_streamer(
-    key="stealth-game-v2",
+    key="stealth-v4",
     mode=WebRtcMode.SENDONLY,
-    media_stream_constraints={"video": False, "audio": True},
     audio_processor_factory=StealthAudioProcessor,
+    media_stream_constraints={"video": False, "audio": True},
 )
 
-# --- ゲームループ ---
-if ctx.audio_processor and st.session_state.start_time and not st.session_state.game_over:
-    while True:
-        elapsed_time = time.time() - st.session_state.start_time
-        remaining_time = max(0, GAME_TIME - int(elapsed_time))
-        
-        # 音量取得
-        current_vol = ctx.audio_processor.max_amplitude
-        
-        # タイマー更新
-        timer_placeholder.metric("残り時間", f"{remaining_time}秒")
-        
-        # 判定：見つかった場合
-        if current_vol > threshold:
-            st.session_state.game_over = True
-            enemy_placeholder.image("assets/enemy_front.png", caption="見つかった！")
-            st.error("敵がこちらを振り向いた！ゲームオーバー！")
+# --- ゲーム実行ロジック ---
+# ctx.state.playing が True（マイク起動中）の時だけ動かす
+if ctx.state.playing:
+    if not st.session_state.game_active:
+        st.session_state.start_time = time.time()
+        st.session_state.game_active = True
+
+    # ゲームループ（Streamlitの再レンダリングを利用）
+    while st.session_state.game_active:
+        # ctx.audio_processor が生成されるまで待機が必要な場合があるためチェック
+        if ctx.audio_processor:
+            current_vol = ctx.audio_processor.max_amplitude
+            elapsed = time.time() - st.session_state.start_time
+            remaining = max(0, limit_time - int(elapsed))
+
+            # UI更新
+            status_text.subheader(f"残り時間: {remaining}s | 現在の音量: {current_vol:.3f}")
+            progress_bar.progress(min(1.0, current_vol / threshold))
+
+            # 判定1: 見つかった
+            if current_vol > threshold:
+                enemy_image.image("assets/enemy_front.png", caption="!!! 見つかった !!!")
+                st.error("敵がこちらを振り向いた！")
+                st.session_state.game_active = False
+                break
+
+            # 判定2: クリア
+            if elapsed >= limit_time:
+                enemy_image.image("assets/enemy_clear.png", caption="生き延びた！")
+                st.balloons()
+                st.success("ミッションコンプリート！")
+                st.session_state.game_active = False
+                break
+
+            time.sleep(0.1) # ブラウザの負荷軽減
+            st.rerun() # 画面を強制更新してリアルタイム性を出す
+        else:
+            time.sleep(0.5)
+            status_text.write("マイク準備中...")
             break
-            
-        # 判定：クリア
-        if remaining_time <= 0:
-            st.session_state.game_over = True
-            st.balloons()
-            st.success("1分間耐え抜いた！ミッション成功！")
-            break
-            
-        time.sleep(0.1)  # 負荷軽減
+else:
+    st.info("上の 'Start' ボタンを押して、マイクの使用を許可してください。")
+    st.session_state.game_active = False
