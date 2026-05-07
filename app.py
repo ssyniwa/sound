@@ -18,7 +18,7 @@ if 'recording_duration' not in st.session_state:
 # 画像はプレースホルダーです。ご自身の素材URLに差し替え可能です。
 spot_settings = {
     "初級：旧・Ｋトンネル": {
-        "threshold": 0.3, 
+        "threshold": 0.8, 
         "required_time": 5, 
         "enemy_img": "assets/p1back.png",
         "description": "比較的安全なスポット。小声でレポートを続けろ。",
