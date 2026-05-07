@@ -11,7 +11,7 @@ class StealthAudioProcessor(AudioProcessorBase):
     def recv_audio(self, frame):
         audio_data = frame.to_ndarray()
         # 振幅の最大値を取得
-        self.max_amplitude = np.max(np.abs(audio_data)) / 32768.0
+        self.max_amplitude = np.max(np.abs(audio_data)) / 327.0
         return frame
 
 # --- アプリ設定 ---
