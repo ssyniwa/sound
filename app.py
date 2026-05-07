@@ -9,9 +9,17 @@ class StealthAudioProcessor(AudioProcessorBase):
         self.max_amplitude = 0
 
     def recv_audio(self, frame):
-        audio_data = frame.to_ndarray()
-        # 振幅の最大値を取得
-        self.max_amplitude = np.max(np.abs(audio_data)) 
+        # 1. 音声データを1次元の数値配列(int16)として取得
+        raw_data = frame.to_ndarray().flatten()
+        
+        # 2. データが空でないか確認
+        if len(raw_data) > 0:
+            # 3. 絶対値の最大値を計算し、浮動小数点に正規化
+            # (int16の最大値 32768 で割る)
+            self.max_amplitude = np.max(np.abs(raw_data)) / 32768.0
+        else:
+            self.max_amplitude = 0
+            
         return frame
 
 # --- アプリ設定 ---
