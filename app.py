@@ -25,7 +25,7 @@ if 'start_time' not in st.session_state:
     st.session_state.start_time = 0
 
 # --- UI要素 ---
-threshold = st.sidebar.slider("敵の感度 (しきい値)", 0.01, 0.50, 0.15)
+threshold = st.sidebar.slider("敵の感度 (しきい値)", 0.01, 1.00, 0.15)
 limit_time = 30 # 30秒耐える設定
 
 # 画像表示用
