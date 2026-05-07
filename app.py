@@ -51,7 +51,7 @@ if st.session_state.game_step == "setup":
         st.image(conf['enemy_img'], caption=spot_name)
     with col2:
         st.subheader("ミッション")
-        st.write(f"**目的:** {conf['required_time']}秒間、声を出さずに探索をレポートせよ。")
+        st.write(f"**目的:** {int(3*conf['required_time'])}秒間、声を出さずに探索をレポートせよ。")
         st.write(f"**ヒント:** {conf['description']}")
         st.warning("⚠️ 絶叫（一定以上の音量）は配信終了（ゲームオーバー）を意味する。")
 
