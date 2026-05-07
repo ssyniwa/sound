@@ -34,9 +34,9 @@ spot_settings = {
     "上級：呪われたＳ家": {
         "threshold": 0.3, 
         "required_time": 15, 
-        "enemy_img": "assets/enemy_back.png",
+        "enemy_img": "assets/p3back.png",
         "description": "最恐のスポット。息を殺せ。物音一つ立てるな。",
-        "outimg": "assets/enemy_front.png"
+        "outimg": "assets/p3front.png"
     }
 }
 
@@ -133,7 +133,7 @@ elif st.session_state.game_step == "result":
         
         else:
             # クリア演出
-            st.image("assets/enemy_clear.png", caption="生還")
+            st.image("assets/aclear.png", caption="生還")
             st.success("配信者「ふぅ、なんとか無事に脱出できました...」")
             st.success("（配信は伝説となった）")
             st.balloons()
