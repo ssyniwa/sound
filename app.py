@@ -66,7 +66,7 @@ if ctx.state.playing:
             current_vol = ctx.audio_processor.max_amplitude
             elapsed = time.time() - st.session_state.start_time
             remaining = max(0, limit_time - int(elapsed))
-
+            st.write(f"Raw Volume: {ctx.audio_processor.max_amplitude}")
             # UI更新
             status_text.subheader(f"残り時間: {remaining}s | 現在の音量: {current_vol:.3f}")
             progress_bar.progress(min(1.0, current_vol / threshold))
