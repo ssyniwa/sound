@@ -13,13 +13,13 @@ class StealthAudioProcessor(AudioProcessorBase):
         raw_data = frame.to_ndarray().flatten()
         
         # 2. データが空でないか確認
-        if len(raw_data) > 0:
-            # 3. 絶対値の最大値を計算し、浮動小数点に正規化
-            # (int16の最大値 32768 で割る)
+        if raw_data.dtype == np.int16:
+            # 整数（16bit）で届いた場合
             self.max_amplitude = np.max(np.abs(raw_data)) / 32768.0
         else:
-            self.max_amplitude = 0
-            
+            # すでに小数（float）で届いている場合
+            self.max_amplitude = np.max(np.abs(raw_data))
+
         return frame
 
 # --- アプリ設定 ---
