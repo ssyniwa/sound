@@ -86,7 +86,7 @@ if ctx.state.playing:
                 st.session_state.game_active = False
                 break
 
-            time.sleep(0.5) # ブラウザの負荷軽減
+            time.sleep(1.0) # ブラウザの負荷軽減
             st.rerun() # 画面を強制更新してリアルタイム性を出す
         else:
             time.sleep(0.5)
