@@ -41,7 +41,7 @@ with col1:
     timer_placeholder = st.empty()
     
     # 初期の敵（背中を向けている状態）
-    enemy_placeholder.image("https://placehold.jp/400x300.png?text=Enemy_Back", caption="敵は背を向けている...")
+    enemy_placeholder.image("assets/enemy_back.png", caption="敵は背を向けている...")
 
 # WebRTC接続
 ctx = webrtc_streamer(
@@ -66,7 +66,7 @@ if ctx.audio_processor and st.session_state.start_time and not st.session_state.
         # 判定：見つかった場合
         if current_vol > threshold:
             st.session_state.game_over = True
-            enemy_placeholder.image("https://placehold.jp/400x300.png?text=DETECTED_!!", caption="見つかった！")
+            enemy_placeholder.image("assets/enemy_front.png", caption="見つかった！")
             st.error("敵がこちらを振り向いた！ゲームオーバー！")
             break
             
