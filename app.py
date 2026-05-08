@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import time
-
+import random
 # --- ページ設定とタイトル ---
 st.set_page_config(page_title="心霊スポット配信", layout="centered")
 st.title("📹 絶叫厳禁！心霊スポット生配信")
@@ -13,6 +13,10 @@ if 'current_vol' not in st.session_state:
     st.session_state.current_vol = 0
 if 'recording_duration' not in st.session_state:
     st.session_state.recording_duration = 0
+if 'success' not in st.session_state:
+    st.session_state.success = False
+if 'reason' not in st.session_state:
+    st.session_state.reason = ""
 
 # --- 難易度（スポット）設定 ---
 # 画像はプレースホルダーです。ご自身の素材URLに差し替え可能です。
@@ -39,7 +43,35 @@ spot_settings = {
         "outimg": "assets/p3front.png"
     }
 }
+# --- 音声設定 ---
+# ファイル名と、それに対応する「指示」の辞書
+GHOST_SOUNDS = [
+    {"file": "assets/nv1.mp3", "text": "「……ねえ、返事して……」", "type": "IGNORE"},
+    {"file": "assets/nv2.mp3", "text": "「こっちを向いてよ」", "type": "IGNORE"},
+    {"file": "assets/nv3.mp3", "text": "「そこにいるんでしょ」", "type": "IGNORE"}
+]
+# --- 判定用関数 ---
+def analyze_game(audio_data, event_time, event_type, threshold):
+    # event_time（秒）付近の音声を切り出して判定
+    # 44100Hzと仮定して、イベント発生前後1秒をチェック
+    start_idx = int(max(0, (event_time - 0.5) * 44100))
+    end_idx = int(min(len(audio_data), (event_time + 1.5) * 44100))
+    event_clip = audio_data[start_idx:end_idx]
+    
+    if len(event_clip) == 0:
+        return True, ""
 
+    max_vol = np.max(np.abs(event_clip)) / 32768.0
+    avg_vol = np.mean(np.abs(event_clip)) / 32768.0
+
+    if event_type == "SILENT":
+        if max_vol > threshold:
+            return False, "「だるまさんがころんだ」の最中に物音を立てました。"
+    elif event_type == "REPLY":
+        if avg_vol < 0.02: # 一定以上の音量がない
+            return False, "霊の問いかけを無視（無音）したため、怒りを買いました。"
+    
+    return True, ""
 # --- セットアップ画面 ---
 if st.session_state.game_step == "setup":
     st.header("1. 配信スポット（難易度）を選択")
@@ -73,7 +105,7 @@ elif st.session_state.game_step == "streaming":
     st.subheader("📹 配信者への指示")
     st.error("「小声でレポートを続けてください...」")
     st.write(f"（目標探索時間: {int(3*conf['required_time'])}秒）")
-
+    st.error("⚠️ 録音終了後、霊との接触記録が再生されます。指示に従えていなければ死を意味します。")
     # 移動距離ゲージ
     progress_bar = st.progress(0, text="探索進捗: 0%")
 
@@ -102,6 +134,38 @@ elif st.session_state.game_step == "streaming":
                 if progress_score >= 100:
                     break
 
+            # --- 演出開始 ---
+            with st.status("霊障を解析中...", expanded=True) as status:
+                # 1. ランダムなタイミングと音声の決定
+                event_time = random.uniform(1.0, max(1.1, duration - 2.0))
+                event = random.choice(GHOST_SOUNDS)
+                
+                st.write(f"探索時間: {duration:.1f}秒")
+                time.sleep(1)
+                
+                # 2. 「再現再生」
+                # 録音時間に合わせて待機し、その瞬間に音を鳴らす
+                st.write(f"【記録映像再生中：{event_time:.1f}秒地点】")
+                # 指定の不気味な音声を再生
+                st.audio(event['file'], format="audio/mp3", autoplay=True)
+                st.error(event['text'])
+                
+                # 3. 判定
+                success, reason = analyze_game(audio_data, event_time, event['type'], conf['threshold'])
+                
+                # 基本的な絶叫判定（全区間）
+                if np.max(np.abs(audio_data)) / 32768.0 > 0.6:
+                    success = False
+                    reason = "探索中に大きな物音（または悲鳴）を立てすぎました。"
+                
+                
+
+                time.sleep(2)
+                status.update(label="解析終了", state="complete")
+
+            # 結果をセッションに保存
+            st.session_state.success = success
+            st.session_state.reason = reason
             st.session_state.current_vol = max_vol
             st.session_state.recording_duration = duration
             st.session_state.game_step = "result"
