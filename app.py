@@ -147,11 +147,11 @@ elif st.session_state.game_step == "streaming":
                 # 録音時間に合わせて待機し、その瞬間に音を鳴らす
                 st.write(f"【記録映像再生中：{event_time:.1f}秒地点】")
                 # 指定の不気味な音声を再生
-                st.audio(event["file"], format="audio/mp3", autoplay=True)
-                st.error(event["text"])
+                st.audio(event.get("file"), format="audio/mp3", autoplay=True)
+                st.error(event.get("text"))
                 
                 # 3. 判定
-                success, reason = analyze_game(audio_data, event_time, event['type'], conf['threshold'])
+                success, reason = analyze_game(audio_data, event_time, event.get('type'), conf['threshold'])
                 
                 # 基本的な絶叫判定（全区間）
                 if np.max(np.abs(audio_data)) / 32768.0 > 0.6:
