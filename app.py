@@ -2,6 +2,8 @@ import streamlit as st
 import numpy as np
 import time
 import random
+import pathlib
+import os
 # --- ページ設定とタイトル ---
 st.set_page_config(page_title="心霊スポット配信", layout="centered")
 st.title("📹 絶叫厳禁！心霊スポット生配信")
@@ -105,7 +107,7 @@ elif st.session_state.game_step == "streaming":
     st.subheader("📹 配信者への指示")
     st.error("「小声でレポートを続けてください...」")
     st.write(f"（目標探索時間: {int(3*conf['required_time'])}秒）")
-    st.error("⚠️ 録音終了後、霊との接触記録が再生されます。指示に従えていなければ死を意味します。")
+    st.error("⚠️ 録音終了後、霊との接触記録が再生されます。")
     # 移動距離ゲージ
     progress_bar = st.progress(0, text="探索進捗: 0%")
 
@@ -146,8 +148,24 @@ elif st.session_state.game_step == "streaming":
                 # 2. 「再現再生」
                 # 録音時間に合わせて待機し、その瞬間に音を鳴らす
                 st.write(f"【記録映像再生中：{event_time:.1f}秒地点】")
-                # 指定の不気味な音声を再生
-                st.audio(event.get("file"), format="audio/mp3", autoplay=True)
+                # 1. パスの構築
+                BASE_DIR = pathlib.Path(__file__).parent.resolve()
+                audio_path = BASE_DIR / "assets" / "nv2.mp3"
+
+                # 2. 存在確認と読み込み
+                if audio_path.exists():
+                    try:
+                        # ファイルをバイナリとして読み込む（辞書操作はしない）
+                        audio_bytes = audio_path.read_bytes()
+                        # 再生
+                        st.audio(audio_bytes, format="audio/mp3", autoplay=True)
+                    except Exception as e:
+                        st.error(f"再生エラー: {e}")
+                else:
+                    # どこを探しているか画面に出してデバッグ
+                    st.error(f"ファイルが見つかりません: {audio_path}")
+                    # フォルダの中身を一覧表示してスペルミスがないか確認
+                    st.write("assets内のファイル一覧:", os.listdir(BASE_DIR / "assets"))
                 st.error(event.get("text"))
                 
                 # 3. 判定
