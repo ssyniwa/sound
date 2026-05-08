@@ -155,7 +155,7 @@ elif st.session_state.game_step == "streaming":
                 st.audio(event.get("file"), format="audio/mp3", autoplay=True)
 
                 st.error(event.get("text"))
-                
+                time.sleep(2)
                 # 3. 判定
                 success, reason = analyze_game(audio_data, event_time, event.get('type'), conf['threshold'])
                 
