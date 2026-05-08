@@ -6,6 +6,29 @@ import pathlib
 import os
 # --- ページ設定とタイトル ---
 st.set_page_config(page_title="心霊スポット配信", layout="centered")
+st.markdown("""
+    <style>
+    /* 全体の背景色と文字色 */
+    .stApp {
+        background-color: #050505;
+        color: #e0e0e0;
+    }
+    
+    /* タイトル（血のような赤と揺れる演出） */
+    h1 {
+        color: #ff0000 !important;
+        text-shadow: 2px 2px 8px #550000;
+        font-family: 'MS Mincho', 'serif';
+    }
+
+    /* マイク入力ウィジェットの装飾 */
+    section[data-testid="stAudioInput"] {
+        background-color: #111;
+        border: 1px solid #330000;
+        border-radius: 10px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 st.title("📹 絶叫厳禁！心霊スポット生配信")
 
 # --- セッション状態の初期化 ---
