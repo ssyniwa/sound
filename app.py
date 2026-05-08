@@ -45,11 +45,11 @@ spot_settings = {
 }
 # --- 音声設定 ---
 # ファイル名と、それに対応する「指示」の辞書
-GHOST_SOUNDS = {
+GHOST_SOUNDS = [
     {"file": "assets/nv1.mp3", "text": "「……ねえ、返事して……」", "type": "IGNORE"},
     {"file": "assets/nv2.mp3", "text": "「こっちを向いてよ」", "type": "IGNORE"},
     {"file": "assets/nv3.mp3", "text": "「そこにいるんでしょ」", "type": "IGNORE"}
-}
+]
 # --- 判定用関数 ---
 def analyze_game(audio_data, event_time, event_type, threshold):
     # event_time（秒）付近の音声を切り出して判定
