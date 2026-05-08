@@ -97,6 +97,9 @@ def analyze_game(audio_data, event_time, event_type, threshold):
             return False, "霊の問いかけを無視（無音）したため、怒りを買いました。"
     
     return True, ""
+def horror_text(text):
+    st.markdown(f"<p style='font-family:serif; color:#ff4b4b; font-size:24px; letter-spacing:5px; text-align:center;'>{text}</p>", unsafe_allow_html=True)
+
 # --- セットアップ画面 ---
 if st.session_state.game_step == "setup":
     st.header("1. 配信スポット（難易度）を選択")
@@ -128,7 +131,7 @@ elif st.session_state.game_step == "streaming":
 
     st.markdown("---")
     st.subheader("📹 配信者への指示")
-    st.error("「小声でレポートを続けてください...」")
+    st.error(horror_text("「小声でレポートを続けてください...」"))
     st.write(f"（目標探索時間: {int(3*conf['required_time'])}秒）")
     st.error("⚠️ 録音終了後、霊との接触記録が再生されます。")
     # 移動距離ゲージ
