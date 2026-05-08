@@ -140,7 +140,15 @@ elif st.session_state.game_step == "streaming":
             with st.status("霊障を解析中...", expanded=True) as status:
                 # 1. ランダムなタイミングと音声の決定
                 event_time = random.uniform(1.0, max(1.1, duration - 2.0))
+                # 修正案
+                if 'played_events' not in st.session_state:
+                    st.session_state.played_events = set() # 既に流したイベントを記録する集合
+
                 event = random.choice(GHOST_SOUNDS)
+
+                # 辞書そのものではなく、ファイル名（文字列）でチェック
+                if event['file'] not in st.session_state.played_events:
+                    st.session_state.played_events.add(event['file']) # 文字列なら set に追加可能
                 
                 st.write(f"探索時間: {duration:.1f}秒")
                 time.sleep(1)
@@ -149,23 +157,9 @@ elif st.session_state.game_step == "streaming":
                 # 録音時間に合わせて待機し、その瞬間に音を鳴らす
                 st.write(f"【記録映像再生中：{event_time:.1f}秒地点】")
                 # 1. パスの構築
-                BASE_DIR = pathlib.Path(__file__).parent.resolve()
-                audio_path = BASE_DIR / "assets" / "nv2.mp3"
 
-                # 2. 存在確認と読み込み
-                if audio_path.exists():
-                    try:
-                        # ファイルをバイナリとして読み込む（辞書操作はしない）
-                        audio_bytes = audio_path.read_bytes()
-                        # 再生
-                        st.audio(audio_bytes, format="audio/mp3", autoplay=True)
-                    except Exception as e:
-                        st.error(f"再生エラー: {e}")
-                else:
-                    # どこを探しているか画面に出してデバッグ
-                    st.error(f"ファイルが見つかりません: {audio_path}")
-                    # フォルダの中身を一覧表示してスペルミスがないか確認
-                    st.write("assets内のファイル一覧:", os.listdir(BASE_DIR / "assets"))
+                st.audio(st.session_state.played_events, format="audio/mp3", autoplay=True)
+
                 st.error(event.get("text"))
                 
                 # 3. 判定
